@@ -11,7 +11,7 @@
 
 #Variables, only Change here
 $DestinationRoot="D:\backup\" #Copy the Files to this Location
-$BackupDirs="C:\Users\U\Documents\LEGO Creations" #What Folders you want to backup
+$BackupDirs="C:\Users\User\Documents\LEGO Creations" #What Folders you want to backup
 
 ### Make a backup of the Backup folder
 $date = Get-Date -Format FileDate
