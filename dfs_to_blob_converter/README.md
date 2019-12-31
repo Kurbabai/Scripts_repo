@@ -14,5 +14,7 @@ original  list :
 Commands list :
 
 .\azcopy.exe copy "\\iglooprod.global\p-us-binaries\afa-data0\binaries\04868695-2c50-4e50-b044-d6bb8c79cd04\" "https://igloopusafabinariessa01.blob.core.windows.net/binaries/" --list-of-files "C:\temp\blob_migration\USAFA\binaries\04868695-2c50-4e50-b044-d6bb8c79cd04.txt"
+
 .\azcopy.exe copy "\\iglooprod.global\p-us-binaries\afa-data0\binaries\1\" "https://igloopusafabinariessa02.blob.core.windows.net/binaries/" --list-of-files "C:\temp\blob_migration\USAFA\binaries\1.txt"
+
 .\azcopy.exe copy "\\iglooprod.global\p-us-binaries\afa-data0\binaries\1000079990\" "https://igloopusafabinariessa02.blob.core.windows.net/binaries/" --list-of-files "C:\temp\blob_migration\USAFA\binaries\1000079990.txt"
