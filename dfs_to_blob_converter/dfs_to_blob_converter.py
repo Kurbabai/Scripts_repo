@@ -25,28 +25,28 @@ def main():
     #Create new base folder
     base_folder = create_folder("blob_migration")
     # open the original_file and read content
-    f = open(original_file, "r")
     num_lines = sum(1 for line in open(original_file))
+    f = open(original_file, "r")
     if f.mode == "r":
         # readlines reads the individual lines
         line = f.readlines()
-        for x in line:
-            while i < num_lines:
-                progress(i, num_lines, status="Reading files")
+        while i < num_lines:
+            for x in line:
                 # split line per "\" character and create splitted list
                 splitted_list = x.split("\\")
                 command_string = ".\\azcopy.exe copy \"\\\\" + splitted_list[2] + "\\" + splitted_list[3] + "\\" + \
-                                 splitted_list[4] + "\\" + splitted_list[5] + "\\" + splitted_list[
-                                     6] + "\\\"" + " \"https://igloo" + environment_code + country_code + tenant_name + "binariessa" + container_hex(
+                                    splitted_list[4] + "\\" + splitted_list[5] + "\\" + splitted_list[
+                                        6] + "\\\"" + " \"https://igloo" + environment_code + country_code + tenant_name + "binariessa" + container_hex(
                     splitted_list[6][:2]) + ".blob.core.windows.net/" + splitted_list[
-                                     5] + "/\" --list-of-files \"C:\\temp\\blob_migration\\" + country_code.upper() + tenant_name.upper() + "\\" + \
-                                 splitted_list[5] + "\\" + splitted_list[6] + ".txt\""
+                                        5] + "/\" --list-of-files \"C:\\temp\\blob_migration\\" + country_code.upper() + tenant_name.upper() + "\\" + \
+                                    splitted_list[5] + "\\" + splitted_list[6] + ".txt\""
 
                 if command_string not in commands_list:
                     commands_list.append(command_string)
 
                 dest_folder = create_folder("blob_migration\\" + splitted_list[5])
                 dest_file = "blob_migration\\" + splitted_list[5] + "\\" + splitted_list[6] + ".txt"
+                progress(i, num_lines, status="Reading files")
                 w = open(dest_file, "a+")
                 w.write(splitted_list[7] + "/" + splitted_list[8])
                 w.close()
@@ -108,7 +108,6 @@ def container_hex(item):
     else:
         sa_number = "not_defined"
     return sa_number
-
 
 def create_folder(folder_name):
     if not os.path.exists(folder_name):
