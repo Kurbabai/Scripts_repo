@@ -1,6 +1,8 @@
 # import libraries
 import os
 import shutil
+import sys
+import time
 
 # Declare variables
 original_file = "list.txt"
@@ -10,6 +12,7 @@ tenant_name = "afa"
 
 
 def main():
+    i = 0
     # create empty list for azcopy commands
     commands_list = []
     # check if base folder exist , delete and create new
@@ -17,37 +20,38 @@ def main():
     # Delete all contents of a directory using shutil.rmtree() and  handle exceptions
     try:
        shutil.rmtree(base_folder)
+       print('Folder ' + base_folder + ' has been deleted')
     except:
        print('Error while deleting blob_migration directory')
     #Create new base folder
     base_folder = create_folder("blob_migration")
     # open the original_file and read content
     f = open(original_file, "r")
+    num_lines = sum(1 for line in open(original_file))
     if f.mode == "r":
-        line = f.readlines()
         # readlines reads the individual lines
+        line = f.readlines()
         for x in line:
-            # split line per "\" character and create splitted list
-            splitted_list = x.split("\\")
-            #            print (splitted_list[6][:2])
-            #            sa_number = container_hex(splitted_list[6][:2])
-            #            print(splitted_list)
-            command_string = ".\\azcopy.exe copy \"\\\\" + splitted_list[2] + "\\" + splitted_list[3] + "\\" + \
-                             splitted_list[4] + "\\" + splitted_list[5] + "\\" + splitted_list[
-                                 6] + "\\\"" + " \"https://igloo" + environment_code + country_code + tenant_name + "binariessa" + container_hex(
-                splitted_list[6][:2]) + ".blob.core.windows.net/" + splitted_list[
-                                 5] + "/\" --list-of-files \"C:\\temp\\blob_migration\\" + country_code.upper() + tenant_name.upper() + "\\" + \
-                             splitted_list[5] + "\\" + splitted_list[6] + ".txt\""
-            #            print(command_string)
+            while i < num_lines:
+                progress(i, num_lines, status="Reading files")
+                # split line per "\" character and create splitted list
+                splitted_list = x.split("\\")
+                command_string = ".\\azcopy.exe copy \"\\\\" + splitted_list[2] + "\\" + splitted_list[3] + "\\" + \
+                                 splitted_list[4] + "\\" + splitted_list[5] + "\\" + splitted_list[
+                                     6] + "\\\"" + " \"https://igloo" + environment_code + country_code + tenant_name + "binariessa" + container_hex(
+                    splitted_list[6][:2]) + ".blob.core.windows.net/" + splitted_list[
+                                     5] + "/\" --list-of-files \"C:\\temp\\blob_migration\\" + country_code.upper() + tenant_name.upper() + "\\" + \
+                                 splitted_list[5] + "\\" + splitted_list[6] + ".txt\""
 
-            if command_string not in commands_list:
-                commands_list.append(command_string)
+                if command_string not in commands_list:
+                    commands_list.append(command_string)
 
-            dest_folder = create_folder("blob_migration\\" + splitted_list[5])
-            dest_file = "blob_migration\\" + splitted_list[5] + "\\" + splitted_list[6] + ".txt"
-            w = open(dest_file, "a+")
-            w.write(splitted_list[7] + "/" + splitted_list[8])
-            w.close()
+                dest_folder = create_folder("blob_migration\\" + splitted_list[5])
+                dest_file = "blob_migration\\" + splitted_list[5] + "\\" + splitted_list[6] + ".txt"
+                w = open(dest_file, "a+")
+                w.write(splitted_list[7] + "/" + splitted_list[8])
+                w.close()
+                i +=1
     for command in commands_list:
         print(command)
 
@@ -110,7 +114,15 @@ def container_hex(item):
 def create_folder(folder_name):
     if not os.path.exists(folder_name):
         os.mkdir(folder_name)
-        print("Directory " , folder_name ,  " Created ")
+        print("Directory " + folder_name +  " created \n\r")
+
+def progress(count, total, status=''):
+    bar_len = 60
+    filled_len = int(round(bar_len * count / float(total)))
+    percents = round(100.0 * count / float(total), 1)
+    bar = '=' * filled_len + '-' * (bar_len - filled_len)
+    sys.stdout.write('[%s] %s%s ...%s\r' % (bar, percents, '%', status))
+    sys.stdout.flush()
 
 if __name__ == "__main__":
     main()
