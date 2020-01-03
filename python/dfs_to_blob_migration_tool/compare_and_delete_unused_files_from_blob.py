@@ -3,7 +3,7 @@ import os
 from azure.storage.blob import BlobServiceClient, BlobClient, ContainerClient
 import json
 import sys
-from itertools import (takewhile,repeat)
+from itertools import (takewhile, repeat)
 
 # Declare variables
 account_name = "igloopusafabinariessa01"
@@ -11,23 +11,24 @@ connect_str_from_passwordstate = '"{\\"igloopusafabinariessa01.blob.core.windows
 container_name = "test"
 original_file = "list.txt"
 
-def main ():
+
+def main():
     try:
         print("Connection string for " + account_name + ": " + azure_connection_string(account_name, connect_str_from_passwordstate))
 
-        blob_name_set = set ()
+        blob_name_set = set()
         for blob in azure_blob_file_list(container_name, azure_connection_string(account_name, connect_str_from_passwordstate)):
-            blob_name_set.add (blob.name)
-        print ("Blob name set : " + str(blob_name_set))
+            blob_name_set.add(blob.name)
+        print("Blob name set : " + str(blob_name_set))
 
         i = 0
 
         # open the original_file and read content
         num_lines = rawincount(original_file) + 1
 
-        print ("Total files in original file : " + str(num_lines))
+        print("Total files in original file : " + str(num_lines))
 
-        original_file_set = set ()
+        original_file_set = set()
         f = open(original_file, "r")
         if f.mode == "r":
             # readlines reads the individual lines
@@ -39,15 +40,16 @@ def main ():
                     # Adding the line to original_file_set
                     original_file_set.add(x)
                     progress(i, num_lines, status="Reading files")
-                    i +=1
+                    i += 1
 
         set_for_deletion = original_file_set.intersection(blob_name_set)
-        print ("Original file set : " + str(original_file_set))
-        print ("Set for deletion : " + str(set_for_deletion))
+        print("Original file set : " + str(original_file_set))
+        print("Set for deletion : " + str(set_for_deletion))
 
     except Exception as ex:
         print('Exception:')
         print(ex)
+
 
 def azure_blob_file_list(container_name, connect_str):
     try:
@@ -67,7 +69,8 @@ def azure_blob_file_list(container_name, connect_str):
         print('Exception')
         print(ex)
 
-def azure_connection_string (account_name, connect_str_from_passwordstate):
+
+def azure_connection_string(account_name, connect_str_from_passwordstate):
     try:
         # Remove backslash characters from passwordstate string
         str = connect_str_from_passwordstate.translate({ord('\\'): None})
@@ -88,6 +91,7 @@ def azure_connection_string (account_name, connect_str_from_passwordstate):
     except Exception as ex:
         print('Exception:')
         print(ex)
+
 
 def container_hex(item):
     sa_list_01 = ["00", "01", "02", "03", "04", "05", "06", "07", "08", "09", "0a", "0b", "0c", "0d", "0e", "0f"]
@@ -143,6 +147,7 @@ def container_hex(item):
         sa_number = "not_defined"
     return sa_number
 
+
 def progress(count, total, status=''):
     bar_len = 60
     filled_len = int(round(bar_len * count / float(total)))
@@ -151,10 +156,12 @@ def progress(count, total, status=''):
     sys.stdout.write('[%s] %s%s ...%s\r' % (bar, percents, '%', status))
     sys.stdout.flush()
 
+
 def rawincount(filename):
     f = open(filename, 'rb')
-    bufgen = takewhile(lambda x: x, (f.raw.read(1024*1024) for _ in repeat(None)))
-    return sum( buf.count(b'\n') for buf in bufgen )
+    bufgen = takewhile(lambda x: x, (f.raw.read(1024 * 1024) for _ in repeat(None)))
+    return sum(buf.count(b'\n') for buf in bufgen)
+
 
 if __name__ == "__main__":
     main()
