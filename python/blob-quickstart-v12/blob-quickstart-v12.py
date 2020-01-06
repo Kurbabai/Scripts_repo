@@ -12,7 +12,7 @@ try:
     # environment variable into account.
     connect_str = os.getenv('AZURE_STORAGE_CONNECTION_STRING')
 
-    #print (connect_str)
+    # print (connect_str)
 
     # Create the BlobServiceClient object which will be used to create a container client
     blob_service_client = BlobServiceClient.from_connection_string(connect_str)

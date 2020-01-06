@@ -1,4 +1,2 @@
-test2.txt
-test3.txt
-test4.txt
-test5.txt
+\\rnour-lp\p-us-binaries\afa-data0\test\04868695-2c50-4e50-b044-d6bb8c79cd04\00045b8e-bed9-45b3-86a1-95ef826d21a3\00045b8e-bed9-45b3-86a1-95ef826d21a3.jpg
+\\rnour-lp\p-us-binaries\afa-data0\test\04868695-2c50-4e50-b044-d6bb8c79cd04\002f857d-0b12-4d22-8aff-86201b89f537\002f857d-0b12-4d22-8aff-86201b89f537.png
