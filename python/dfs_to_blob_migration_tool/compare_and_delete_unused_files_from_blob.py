@@ -77,7 +77,7 @@ def main():
         set_to_add = file_name_set - blob_name_set
         print("Blob name set : " + str(blob_name_set))
         print(" File name set : " + str(file_name_set))
-        #print("Set to remove :" + str(set_to_remove))
+        # print("Set to remove :" + str(set_to_remove))
         print("Set to add :" + str(set_to_add))
 
     except Exception as ex:
