@@ -10,9 +10,9 @@ import time
 company_name = "igloo"
 environment_code = "p"
 country_code = "us"
-tenant_name = "afa"
-connect_str_from_passwordstate = input("Please enter connection string from PasswordState: ")
-original_file = "delta_list.txt"
+tenant_name = "ppf"
+connect_str_from_passwordstate = input("Please enter the connection string from PasswordState: ")
+original_file = "USPPF.txt"
 dest_file = environment_code.upper() + country_code.upper() + tenant_name.upper() + "-" + time.strftime(
     "%Y_%m_%d-%H%M%S") + ".txt"
 dfs_share = "rnour-lp"
@@ -21,7 +21,7 @@ account_name_prefix = company_name + environment_code + country_code + tenant_na
 
 def main():
     try:
-        i = j = 0
+        i = 0
 
         # open the original_file and read content
         num_lines = rawincount(original_file) + 1
@@ -51,46 +51,45 @@ def main():
                     w.close()
 
                     print(file_path_url)
-                    print("Connection string for " + account_name + ": " + str(
-                        azure_connection_string(account_name, connect_str_from_passwordstate)))
-                    # Adding the line to original_file_set
-                    # original_file_set.add(x)
+                    print("Connection string for " + account_name + ": " + str(azure_connection_string(account_name, connect_str_from_passwordstate)))
 
-                    progress(i, num_lines, status="Reading files")
+                    progress(i, num_lines, status="Reading files from the original list")
                     i += 1
         f.close()
-
-        container_name = "test"
         account_num = 1
         while account_num <= 32:
-            if account_num < 9:
+            if account_num <= 9:
                 account_name = account_name_prefix + "0" + str(account_num)
             else:
                 account_name = account_name_prefix + str(account_num)
-            for blob in azure_blob_file_list(account_name,
-                                             azure_connection_string(account_name, connect_str_from_passwordstate)):
-                blob_name_set.add(
-                    "https://" + account_name + ".blob.core.windows.net/" + container_name + "/" + blob.name)
+            #account_name = "igloopusppfbinariessa01"
+            #print(azure_blob_file_list(account_name, azure_connection_string(account_name, connect_str_from_passwordstate)))
+            for blob_name_line in azure_blob_file_list(account_name, azure_connection_string(account_name, connect_str_from_passwordstate)):
+                if blob_name_line is not None:
+                    blob_name_set.add(blob_name_line)
+            #azure_blob_file_list(account_name, azure_connection_string(account_name, connect_str_from_passwordstate))
             account_num += 1
 
         set_to_remove = blob_name_set - file_name_set
         set_to_add = file_name_set - blob_name_set
-        print("Blob name set : " + str(blob_name_set))
-        print(" File name set : " + str(file_name_set))
-        # print("Set to remove :" + str(set_to_remove))
-        print("Set to add :" + str(set_to_add))
-
+        print("Blob name set : " + str(blob_name_set) + "\n")
+        print("File name set : " + str(file_name_set) + "\n")
+        print("Set to remove :" + str(set_to_remove) +"\n")
+        print("Set to add :" + str(set_to_add) + "\n")
     except Exception as ex:
         print('Exception in main:')
         print(ex)
 
-
+"""
+        container_name = "binaries"
+        for blob in azure_blob_file_list(account_name, azure_connection_string(account_name, connect_str_from_passwordstate)):
+           blob_name_set.add("https://" + account_name + ".blob.core.windows.net/" + container_name + "/" + blob.name)
+"""
 # set_for_deletion = blob_name_set - original_file_set
 # set_for_adding = original_file_set - blob_name_set
 # print("Original file set : " + str(original_file_set))
 # print("Set for deletion : " + str(set_for_deletion))
 # print("Set for adding : " + str(set_for_adding))
-
 
 def azure_blob_file_list(account_name, connect_str):
     try:
@@ -99,26 +98,28 @@ def azure_blob_file_list(account_name, connect_str):
 
         # List all containers
         all_containers = blob_service_client.list_containers(include_metadata=True)
+        #print("\n" + account_name)
+
+        blob_list_in_container = []
         for container in all_containers:
             # Get container client
             container_client = blob_service_client.get_container_client(container)
-            # List the blobs in the container
-            blob_list = container_client.list_blobs()
-            # Return blob_list object
-            return blob_list
-
-            # print(account_name)
-            # print(container['name'], container['metadata'])
-
+            #print("\t" + container['name'], container['metadata'])
+            for blob in container_client.list_blobs():
+                # List the blobs in the container
+                #blob_list = container_client.list_blobs()
+                #for blob in blob_list:
+                blob_file = "https://" + account_name + ".blob.core.windows.net/" + container.name + "/" + blob.name
+                #print(blob_file + "\n")
+                blob_list_in_container.append(blob_file)
+            # Return blob file
+        return blob_list_in_container
         # if container_client:
-
         # else:
         # print("Container " + container_name + " is not exist on " + account_name)
-
     except Exception as ex:
         print('Exception in function azure_blob_file_list:')
         print(ex)
-
 
 def azure_connection_string(account_name, connect_str_from_passwordstate):
     try:
