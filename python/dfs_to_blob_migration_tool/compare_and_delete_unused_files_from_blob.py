@@ -1,5 +1,4 @@
 # import libraries
-import os
 from azure.storage.blob import BlobServiceClient, BlobClient, ContainerClient
 import json
 import sys
@@ -15,18 +14,15 @@ connect_str_from_passwordstate = input("Please enter the connection string from 
 original_file = "USPPF.txt"
 dest_file = environment_code.upper() + country_code.upper() + tenant_name.upper() + "-" + time.strftime(
     "%Y_%m_%d-%H%M%S") + ".txt"
-dfs_share = "rnour-lp"
+dfs_share = "\\\\rnour-lp\\p-us-binaries\\ppf-data0"
 account_name_prefix = company_name + environment_code + country_code + tenant_name + "binariessa"
-
 
 def main():
     try:
         i = 0
-
         # open the original_file and read content
         num_lines = rawincount(original_file) + 1
-        print("Total files in original file : " + str(num_lines))
-
+        print("Total files in original file : " + str(num_lines) + "\n")
         file_name_set = set()
         blob_name_set = set()
         f = open(original_file, "r")
@@ -35,7 +31,6 @@ def main():
             line = f.readlines()
             while i < num_lines:
                 for x in line:
-                    print(x)
                     # Remove \n characters from the line
                     x = x.translate({ord('\n'): None})
                     # split line per "\" character and create splitted list
@@ -49,47 +44,67 @@ def main():
                     w = open(dest_file, "a+")
                     w.write(file_path_url + "\n")
                     w.close()
-
-                    print(file_path_url)
-                    print("Connection string for " + account_name + ": " + str(azure_connection_string(account_name, connect_str_from_passwordstate)))
-
                     progress(i, num_lines, status="Reading files from the original list")
                     i += 1
         f.close()
         account_num = 1
+        #Get the list of blobs from every container of every storage account
         while account_num <= 32:
             if account_num <= 9:
                 account_name = account_name_prefix + "0" + str(account_num)
             else:
                 account_name = account_name_prefix + str(account_num)
-            #account_name = "igloopusppfbinariessa01"
-            #print(azure_blob_file_list(account_name, azure_connection_string(account_name, connect_str_from_passwordstate)))
             for blob_name_line in azure_blob_file_list(account_name, azure_connection_string(account_name, connect_str_from_passwordstate)):
                 if blob_name_line is not None:
                     blob_name_set.add(blob_name_line)
-            #azure_blob_file_list(account_name, azure_connection_string(account_name, connect_str_from_passwordstate))
             account_num += 1
 
+        #Determining the list of files need to be added and deleted to / from blobs
         set_to_remove = blob_name_set - file_name_set
         set_to_add = file_name_set - blob_name_set
-        print("Blob name set : " + str(blob_name_set) + "\n")
-        print("File name set : " + str(file_name_set) + "\n")
-        print("Set to remove :" + str(set_to_remove) +"\n")
-        print("Set to add :" + str(set_to_add) + "\n")
+        print("\n" + "Total files in File name set: " + str(len(file_name_set)) + "\n")
+        print("\n" + "Total files in storage accounts: " + str(len(blob_name_set)) + "\n")
+        blob_added_count = 0
+        j = 0
+        for blob in set_to_add:
+            # split line per "/" character and create splitted list
+            blob_splitted_list = blob.split("/")
+            account_url = blob_splitted_list[2]
+            account_splitted_list = account_url.split(".")
+            account_name = account_splitted_list[0]
+            container_name = blob_splitted_list[3]
+            blob_name = blob_splitted_list[4] + "/" + blob_splitted_list[5] + "/" + blob_splitted_list[6]
+            source_filename = dfs_share + "\\" + container_name + "\\" + blob_splitted_list[4] + "\\" + blob_splitted_list[5] + "\\" + blob_splitted_list[6]
+            blob_client = BlobClient.from_connection_string(conn_str=azure_connection_string(account_name, connect_str_from_passwordstate), container_name=container_name, blob_name=blob_name)
+            with open(source_filename, "rb") as data:
+                blob_client.upload_blob(data)
+            blob_added_count += 1
+            progress(j, len(set_to_add), status="Uploading missing files to the blob")
+            j += 1
+        print("\n" + str(blob_added_count) + " files have been uploaded")
+
+        blob_deleted_count = 0
+        k = 0
+        for blob in set_to_remove:
+            # split line per "/" character and create splitted list
+            blob_splitted_list = blob.split("/")
+            account_url = blob_splitted_list[2]
+            account_splitted_list = account_url.split(".")
+            account_name = account_splitted_list[0]
+            container_name = blob_splitted_list[3]
+            blob_name = blob_splitted_list[4] + "/" + blob_splitted_list[5] + "/" + blob_splitted_list[6]
+            blob_client = BlobClient.from_connection_string(conn_str=azure_connection_string(account_name, connect_str_from_passwordstate), container_name=container_name, blob_name=blob_name)
+            blob_client.delete_blob()
+            blob_deleted_count += 1
+            progress(k, len(set_to_remove), status="Removing unused files from the blob")
+            k += 1
+        print("\n" + str(blob_deleted_count) + " files have been deleted")
+        if blob_deleted_count == 0 and blob_added_count == 0 :
+            print("\n Congratulations! Your Storage accounts and DFS list fully synchronized!")
+
     except Exception as ex:
         print('Exception in main:')
         print(ex)
-
-"""
-        container_name = "binaries"
-        for blob in azure_blob_file_list(account_name, azure_connection_string(account_name, connect_str_from_passwordstate)):
-           blob_name_set.add("https://" + account_name + ".blob.core.windows.net/" + container_name + "/" + blob.name)
-"""
-# set_for_deletion = blob_name_set - original_file_set
-# set_for_adding = original_file_set - blob_name_set
-# print("Original file set : " + str(original_file_set))
-# print("Set for deletion : " + str(set_for_deletion))
-# print("Set for adding : " + str(set_for_adding))
 
 def azure_blob_file_list(account_name, connect_str):
     try:
@@ -98,32 +113,24 @@ def azure_blob_file_list(account_name, connect_str):
 
         # List all containers
         all_containers = blob_service_client.list_containers(include_metadata=True)
-        #print("\n" + account_name)
 
         blob_list_in_container = []
         for container in all_containers:
             # Get container client
             container_client = blob_service_client.get_container_client(container)
-            #print("\t" + container['name'], container['metadata'])
             for blob in container_client.list_blobs():
                 # List the blobs in the container
-                #blob_list = container_client.list_blobs()
-                #for blob in blob_list:
                 blob_file = "https://" + account_name + ".blob.core.windows.net/" + container.name + "/" + blob.name
-                #print(blob_file + "\n")
                 blob_list_in_container.append(blob_file)
-            # Return blob file
         return blob_list_in_container
-        # if container_client:
-        # else:
-        # print("Container " + container_name + " is not exist on " + account_name)
+
     except Exception as ex:
         print('Exception in function azure_blob_file_list:')
         print(ex)
 
 def azure_connection_string(account_name, connect_str_from_passwordstate):
     try:
-        # Remove backslash characters from passwordstate string
+        # Remove backslash characters from PasswordState string
         str = connect_str_from_passwordstate.translate({ord('\\'): None})
 
         # Remove first and last quotes from the string
