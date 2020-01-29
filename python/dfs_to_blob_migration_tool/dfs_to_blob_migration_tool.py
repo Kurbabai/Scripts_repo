@@ -15,9 +15,10 @@ connect_str_from_passwordstate = input("Please enter the connection string from 
 original_file = country_code + tenant_name + ".txt"
 dest_file = environment_code.upper() + country_code.upper() + tenant_name.upper() + "-" + time.strftime(
     "%Y_%m_%d-%H%M%S") + ".txt"
-#dfs_share = "\\\\rnour-lp\\p-us-binaries\\ppf-data0"
-dfs_share = "\\\\iglooprod.global\\p-" + country_code + "-binaries\\" + tenant_name +"-data0"
+# dfs_share = "\\\\rnour-lp\\p-us-binaries\\ppf-data0"
+dfs_share = "\\\\iglooprod.global\\p-" + country_code + "-binaries\\" + tenant_name + "-data0"
 account_name_prefix = company_name + environment_code + country_code + tenant_name + "binariessa"
+
 
 def main():
     try:
@@ -64,7 +65,8 @@ def main():
                         account_name = account_name_prefix + str(container_hex(splitted_list[6][:2]))
                         j = 1
                         while j <= files_amount_in_line:
-                            file_name = splitted_list[6] + "/" + splitted_list[7] + "/" + splitted_list[8] + "/" + str(j)
+                            file_name = splitted_list[6] + "/" + splitted_list[7] + "/" + splitted_list[8] + "/" + str(
+                                j)
                             file_path_url = "https://" + account_name + ".blob.core.windows.net/" + container_name + "/" + file_name
                             file_name_set.add(file_path_url)
                             # open destination file and put there updated line
@@ -77,19 +79,21 @@ def main():
                         i += 1
         f.close()
         account_num = 1
-        print("\n"+ "Total files in original file after counting multipage files : " + str(num_lines_with_multipage) + "\n")
-        #Get the list of blobs from every container of every storage account
+        print("\n" + "Total files in original file after counting multipage files : " + str(
+            num_lines_with_multipage) + "\n")
+        # Get the list of blobs from every container of every storage account
         while account_num <= 32:
             if account_num <= 9:
                 account_name = account_name_prefix + "0" + str(account_num)
             else:
                 account_name = account_name_prefix + str(account_num)
-            for blob_name_line in azure_blob_file_list(account_name, azure_connection_string(account_name, connect_str_from_passwordstate)):
+            for blob_name_line in azure_blob_file_list(account_name, azure_connection_string(account_name,
+                                                                                             connect_str_from_passwordstate)):
                 if blob_name_line is not None:
                     blob_name_set.add(blob_name_line)
             account_num += 1
 
-        #Determining the list of files need to be added and deleted to / from blobs
+        # Determining the list of files need to be added and deleted to / from blobs
         set_to_remove = blob_name_set - file_name_set
         set_to_add = file_name_set - blob_name_set
         print("\n" + "Total files in File name set: " + str(len(file_name_set)) + "\n")
@@ -104,12 +108,17 @@ def main():
             account_name = account_splitted_list[0]
             container_name = blob_splitted_list[3]
             if len(blob_splitted_list) == 8:
-                blob_name = blob_splitted_list[4] + "/" + blob_splitted_list[5] + "/" + blob_splitted_list[6] + "/" + blob_splitted_list[7]
-                source_filename = dfs_share + "\\" + container_name + "\\" + blob_splitted_list[4] + "\\" + blob_splitted_list[5] + "\\" + blob_splitted_list[6] + "\\" + blob_splitted_list[7]
+                blob_name = blob_splitted_list[4] + "/" + blob_splitted_list[5] + "/" + blob_splitted_list[6] + "/" + \
+                            blob_splitted_list[7]
+                source_filename = dfs_share + "\\" + container_name + "\\" + blob_splitted_list[4] + "\\" + \
+                                  blob_splitted_list[5] + "\\" + blob_splitted_list[6] + "\\" + blob_splitted_list[7]
             else:
                 blob_name = blob_splitted_list[4] + "/" + blob_splitted_list[5] + "/" + blob_splitted_list[6]
-                source_filename = dfs_share + "\\" + container_name + "\\" + blob_splitted_list[4] + "\\" + blob_splitted_list[5] + "\\" + blob_splitted_list[6]
-            blob_client = BlobClient.from_connection_string(conn_str=azure_connection_string(account_name, connect_str_from_passwordstate), container_name=container_name, blob_name=blob_name)
+                source_filename = dfs_share + "\\" + container_name + "\\" + blob_splitted_list[4] + "\\" + \
+                                  blob_splitted_list[5] + "\\" + blob_splitted_list[6]
+            blob_client = BlobClient.from_connection_string(
+                conn_str=azure_connection_string(account_name, connect_str_from_passwordstate),
+                container_name=container_name, blob_name=blob_name)
             with open(source_filename, "rb") as data:
                 blob_client.upload_blob(data)
             blob_added_count += 1
@@ -127,21 +136,25 @@ def main():
             account_name = account_splitted_list[0]
             container_name = blob_splitted_list[3]
             if len(blob_splitted_list) == 8:
-                blob_name = blob_splitted_list[4] + "/" + blob_splitted_list[5] + "/" + blob_splitted_list[6] + "/" + blob_splitted_list[7]
-            else :
+                blob_name = blob_splitted_list[4] + "/" + blob_splitted_list[5] + "/" + blob_splitted_list[6] + "/" + \
+                            blob_splitted_list[7]
+            else:
                 blob_name = blob_splitted_list[4] + "/" + blob_splitted_list[5] + "/" + blob_splitted_list[6]
-            blob_client = BlobClient.from_connection_string(conn_str=azure_connection_string(account_name, connect_str_from_passwordstate), container_name=container_name, blob_name=blob_name)
+            blob_client = BlobClient.from_connection_string(
+                conn_str=azure_connection_string(account_name, connect_str_from_passwordstate),
+                container_name=container_name, blob_name=blob_name)
             blob_client.delete_blob()
             blob_deleted_count += 1
             progress(k, len(set_to_remove), status="Removing unused files from the blob")
             k += 1
         print("\n" + str(blob_deleted_count) + " files have been deleted")
-        if blob_deleted_count == 0 and blob_added_count == 0 :
+        if blob_deleted_count == 0 and blob_added_count == 0:
             print("\n Congratulations! Your Storage accounts and DFS list fully synchronized!")
 
     except Exception as ex:
         print('Exception in main:')
         print(ex)
+
 
 def azure_blob_file_list(account_name, connect_str):
     try:
@@ -164,6 +177,7 @@ def azure_blob_file_list(account_name, connect_str):
     except Exception as ex:
         print('Exception in function azure_blob_file_list:')
         print(ex)
+
 
 def azure_connection_string(account_name, connect_str_from_passwordstate):
     try:
