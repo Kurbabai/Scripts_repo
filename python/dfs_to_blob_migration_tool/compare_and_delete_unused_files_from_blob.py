@@ -21,6 +21,7 @@ account_name_prefix = company_name + environment_code + country_code + tenant_na
 def main():
     try:
         i = 0
+        num_lines_with_multipage = 0
         # open the original_file and read content
         num_lines = rawincount(original_file) + 1
         print("Total files in original file : " + str(num_lines) + "\n")
@@ -34,21 +35,45 @@ def main():
                 for x in line:
                     # Remove \n characters from the line
                     x = x.translate({ord('\n'): None})
-                    # split line per "\" character and create splitted list
-                    splitted_list = x.split("\\")
-                    container_name = splitted_list[5]
-                    account_name = account_name_prefix + str(container_hex(splitted_list[6][:2]))
-                    file_name = splitted_list[6] + "/" + splitted_list[7] + "/" + splitted_list[8]
-                    file_path_url = "https://" + account_name + ".blob.core.windows.net/" + container_name + "/" + file_name
-                    file_name_set.add(file_path_url)
-                    # open destination file and put there updated line
-                    w = open(dest_file, "a+")
-                    w.write(file_path_url + "\n")
-                    w.close()
-                    progress(i, num_lines, status="Reading files from the original list")
-                    i += 1
+                    splitted_file_path_list = x.split(",")
+                    file_path = splitted_file_path_list[0]
+                    files_amount_in_line = int(splitted_file_path_list[1])
+                    if files_amount_in_line == 1:
+                        # split line per "\" character and create splitted list
+                        splitted_list = file_path.split("\\")
+                        container_name = splitted_list[5]
+                        account_name = account_name_prefix + str(container_hex(splitted_list[6][:2]))
+                        file_name = splitted_list[6] + "/" + splitted_list[7] + "/" + splitted_list[8]
+                        file_path_url = "https://" + account_name + ".blob.core.windows.net/" + container_name + "/" + file_name
+                        file_name_set.add(file_path_url)
+                        # open destination file and put there updated line
+                        w = open(dest_file, "a+")
+                        w.write(file_path_url + "\n")
+                        w.close()
+                        progress(i, num_lines, status="Reading files from the original list")
+                        i += 1
+                        num_lines_with_multipage += files_amount_in_line
+                    else :
+                        # split line per "\" character and create splitted list
+                        splitted_list = file_path.split("\\")
+                        container_name = splitted_list[5]
+                        account_name = account_name_prefix + str(container_hex(splitted_list[6][:2]))
+                        j = 1
+                        while j <= files_amount_in_line:
+                            file_name = splitted_list[6] + "/" + splitted_list[7] + "/" + splitted_list[8] + "/" + str(j)
+                            file_path_url = "https://" + account_name + ".blob.core.windows.net/" + container_name + "/" + file_name
+                            file_name_set.add(file_path_url)
+                            # open destination file and put there updated line
+                            w = open(dest_file, "a+")
+                            w.write(file_path_url + "\n")
+                            w.close()
+                            j += 1
+                        num_lines_with_multipage += files_amount_in_line
+                        progress(i, num_lines, status="Reading files from the original list")
+                        i += 1
         f.close()
         account_num = 1
+        print("\n"+ "Total files in original file after counting multipage files : " + str(num_lines_with_multipage) + "\n")
         #Get the list of blobs from every container of every storage account
         while account_num <= 32:
             if account_num <= 9:
@@ -74,8 +99,12 @@ def main():
             account_splitted_list = account_url.split(".")
             account_name = account_splitted_list[0]
             container_name = blob_splitted_list[3]
-            blob_name = blob_splitted_list[4] + "/" + blob_splitted_list[5] + "/" + blob_splitted_list[6]
-            source_filename = dfs_share + "\\" + container_name + "\\" + blob_splitted_list[4] + "\\" + blob_splitted_list[5] + "\\" + blob_splitted_list[6]
+            if len(blob_splitted_list) == 8:
+                blob_name = blob_splitted_list[4] + "/" + blob_splitted_list[5] + "/" + blob_splitted_list[6] + "/" + blob_splitted_list[7]
+                source_filename = dfs_share + "\\" + container_name + "\\" + blob_splitted_list[4] + "\\" + blob_splitted_list[5] + "\\" + blob_splitted_list[6] + "\\" + blob_splitted_list[7]
+            else:
+                blob_name = blob_splitted_list[4] + "/" + blob_splitted_list[5] + "/" + blob_splitted_list[6]
+                source_filename = dfs_share + "\\" + container_name + "\\" + blob_splitted_list[4] + "\\" + blob_splitted_list[5] + "\\" + blob_splitted_list[6]
             blob_client = BlobClient.from_connection_string(conn_str=azure_connection_string(account_name, connect_str_from_passwordstate), container_name=container_name, blob_name=blob_name)
             with open(source_filename, "rb") as data:
                 blob_client.upload_blob(data)
@@ -93,7 +122,10 @@ def main():
             account_splitted_list = account_url.split(".")
             account_name = account_splitted_list[0]
             container_name = blob_splitted_list[3]
-            blob_name = blob_splitted_list[4] + "/" + blob_splitted_list[5] + "/" + blob_splitted_list[6]
+            if len(blob_splitted_list) == 8:
+                blob_name = blob_splitted_list[4] + "/" + blob_splitted_list[5] + "/" + blob_splitted_list[6] + "/" + blob_splitted_list[7]
+            else :
+                blob_name = blob_splitted_list[4] + "/" + blob_splitted_list[5] + "/" + blob_splitted_list[6]
             blob_client = BlobClient.from_connection_string(conn_str=azure_connection_string(account_name, connect_str_from_passwordstate), container_name=container_name, blob_name=blob_name)
             blob_client.delete_blob()
             blob_deleted_count += 1
