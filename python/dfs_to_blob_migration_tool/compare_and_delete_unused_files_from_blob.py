@@ -1,6 +1,7 @@
 # import libraries
 from azure.storage.blob import BlobServiceClient, BlobClient, ContainerClient
 import json
+import os
 import sys
 from itertools import (takewhile, repeat)
 import time
@@ -43,7 +44,10 @@ def main():
                         splitted_list = file_path.split("\\")
                         container_name = splitted_list[5]
                         account_name = account_name_prefix + str(container_hex(splitted_list[6][:2]))
-                        file_name = splitted_list[6] + "/" + splitted_list[7] + "/" + splitted_list[8]
+                        if os.path.isfile(file_path):
+                            file_name = splitted_list[6] + "/" + splitted_list[7] + "/" + splitted_list[8]
+                        else:
+                            file_name = splitted_list[6] + "/" + splitted_list[7] + "/" + splitted_list[8] + "/1"
                         file_path_url = "https://" + account_name + ".blob.core.windows.net/" + container_name + "/" + file_name
                         file_name_set.add(file_path_url)
                         # open destination file and put there updated line
@@ -53,7 +57,7 @@ def main():
                         progress(i, num_lines, status="Reading files from the original list")
                         i += 1
                         num_lines_with_multipage += files_amount_in_line
-                    else :
+                    else:
                         # split line per "\" character and create splitted list
                         splitted_list = file_path.split("\\")
                         container_name = splitted_list[5]
