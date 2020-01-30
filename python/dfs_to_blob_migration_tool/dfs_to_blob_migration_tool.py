@@ -37,18 +37,19 @@ def main():
                 for x in line:
                     # Remove \n characters from the line
                     x = x.translate({ord('\n'): None})
-                    splitted_file_path_list = x.split(",")
-                    file_path = splitted_file_path_list[0]
-                    files_amount_in_line = int(splitted_file_path_list[1])
+                    # split line per "," character and create split file path list
+                    split_file_path_list = x.split(",")
+                    file_path = split_file_path_list[0]
+                    files_amount_in_line = int(split_file_path_list[1])
                     if files_amount_in_line == 1:
-                        # split line per "\" character and create splitted list
-                        splitted_list = file_path.split("\\")
-                        container_name = splitted_list[5]
-                        account_name = account_name_prefix + str(container_hex(splitted_list[6][:2]))
+                        # split line per "\" character and create split list
+                        split_list = file_path.split("\\")
+                        container_name = split_list[5]
+                        account_name = account_name_prefix + str(container_hex(split_list[6][:2]))
                         if os.path.isfile(file_path):
-                            file_name = splitted_list[6] + "/" + splitted_list[7] + "/" + splitted_list[8]
+                            file_name = split_list[6] + "/" + split_list[7] + "/" + split_list[8]
                         else:
-                            file_name = splitted_list[6] + "/" + splitted_list[7] + "/" + splitted_list[8] + "/1"
+                            file_name = split_list[6] + "/" + split_list[7] + "/" + split_list[8] + "/1"
                         file_path_url = "https://" + account_name + ".blob.core.windows.net/" + container_name + "/" + file_name
                         file_name_set.add(file_path_url)
                         # open destination file and put there updated line
@@ -59,13 +60,13 @@ def main():
                         i += 1
                         num_lines_with_multipage += files_amount_in_line
                     else:
-                        # split line per "\" character and create splitted list
-                        splitted_list = file_path.split("\\")
-                        container_name = splitted_list[5]
-                        account_name = account_name_prefix + str(container_hex(splitted_list[6][:2]))
+                        # split line per "\" character and create split list
+                        split_list = file_path.split("\\")
+                        container_name = split_list[5]
+                        account_name = account_name_prefix + str(container_hex(split_list[6][:2]))
                         j = 1
                         while j <= files_amount_in_line:
-                            file_name = splitted_list[6] + "/" + splitted_list[7] + "/" + splitted_list[8] + "/" + str(
+                            file_name = split_list[6] + "/" + split_list[7] + "/" + split_list[8] + "/" + str(
                                 j)
                             file_path_url = "https://" + account_name + ".blob.core.windows.net/" + container_name + "/" + file_name
                             file_name_set.add(file_path_url)
@@ -92,30 +93,30 @@ def main():
                 if blob_name_line is not None:
                     blob_name_set.add(blob_name_line)
             account_num += 1
-
         # Determining the list of files need to be added and deleted to / from blobs
         set_to_remove = blob_name_set - file_name_set
         set_to_add = file_name_set - blob_name_set
         print("\n" + "Total files in File name set: " + str(len(file_name_set)) + "\n")
         print("\n" + "Total files in storage accounts: " + str(len(blob_name_set)) + "\n")
+        # Uploading missing files to the blob
         blob_added_count = 0
         j = 0
         for blob in set_to_add:
-            # split line per "/" character and create splitted list
-            blob_splitted_list = blob.split("/")
-            account_url = blob_splitted_list[2]
-            account_splitted_list = account_url.split(".")
-            account_name = account_splitted_list[0]
-            container_name = blob_splitted_list[3]
-            if len(blob_splitted_list) == 8:
-                blob_name = blob_splitted_list[4] + "/" + blob_splitted_list[5] + "/" + blob_splitted_list[6] + "/" + \
-                            blob_splitted_list[7]
-                source_filename = dfs_share + "\\" + container_name + "\\" + blob_splitted_list[4] + "\\" + \
-                                  blob_splitted_list[5] + "\\" + blob_splitted_list[6] + "\\" + blob_splitted_list[7]
+            # split line per "/" character and create split list
+            blob_split_list = blob.split("/")
+            account_url = blob_split_list[2]
+            account_split_list = account_url.split(".")
+            account_name = account_split_list[0]
+            container_name = blob_split_list[3]
+            if len(blob_split_list) == 8:
+                blob_name = blob_split_list[4] + "/" + blob_split_list[5] + "/" + blob_split_list[6] + "/" + \
+                            blob_split_list[7]
+                source_filename = dfs_share + "\\" + container_name + "\\" + blob_split_list[4] + "\\" + \
+                                  blob_split_list[5] + "\\" + blob_split_list[6] + "\\" + blob_split_list[7]
             else:
-                blob_name = blob_splitted_list[4] + "/" + blob_splitted_list[5] + "/" + blob_splitted_list[6]
-                source_filename = dfs_share + "\\" + container_name + "\\" + blob_splitted_list[4] + "\\" + \
-                                  blob_splitted_list[5] + "\\" + blob_splitted_list[6]
+                blob_name = blob_split_list[4] + "/" + blob_split_list[5] + "/" + blob_split_list[6]
+                source_filename = dfs_share + "\\" + container_name + "\\" + blob_split_list[4] + "\\" + \
+                                  blob_split_list[5] + "\\" + blob_split_list[6]
             blob_client = BlobClient.from_connection_string(
                 conn_str=azure_connection_string(account_name, connect_str_from_passwordstate),
                 container_name=container_name, blob_name=blob_name)
@@ -125,21 +126,21 @@ def main():
             progress(j, len(set_to_add), status="Uploading missing files to the blob")
             j += 1
         print("\n" + str(blob_added_count) + " files have been uploaded")
-
+        # Deleting unused files from the blob
         blob_deleted_count = 0
         k = 0
         for blob in set_to_remove:
-            # split line per "/" character and create splitted list
-            blob_splitted_list = blob.split("/")
-            account_url = blob_splitted_list[2]
-            account_splitted_list = account_url.split(".")
-            account_name = account_splitted_list[0]
-            container_name = blob_splitted_list[3]
-            if len(blob_splitted_list) == 8:
-                blob_name = blob_splitted_list[4] + "/" + blob_splitted_list[5] + "/" + blob_splitted_list[6] + "/" + \
-                            blob_splitted_list[7]
+            # split line per "/" character and create split list
+            blob_split_list = blob.split("/")
+            account_url = blob_split_list[2]
+            account_split_list = account_url.split(".")
+            account_name = account_split_list[0]
+            container_name = blob_split_list[3]
+            if len(blob_split_list) == 8:
+                blob_name = blob_split_list[4] + "/" + blob_split_list[5] + "/" + blob_split_list[6] + "/" + \
+                            blob_split_list[7]
             else:
-                blob_name = blob_splitted_list[4] + "/" + blob_splitted_list[5] + "/" + blob_splitted_list[6]
+                blob_name = blob_split_list[4] + "/" + blob_split_list[5] + "/" + blob_split_list[6]
             blob_client = BlobClient.from_connection_string(
                 conn_str=azure_connection_string(account_name, connect_str_from_passwordstate),
                 container_name=container_name, blob_name=blob_name)
