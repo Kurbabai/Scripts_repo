@@ -120,9 +120,16 @@ def main():
             blob_client = BlobClient.from_connection_string(
                 conn_str=azure_connection_string(account_name, connect_str_from_passwordstate),
                 container_name=container_name, blob_name=blob_name)
-            with open(source_filename, "rb") as data:
-                blob_client.upload_blob(data)
-            blob_added_count += 1
+            if os.path.exists(source_filename):
+                with open(source_filename, "rb") as data:
+                    blob_client.upload_blob(data)
+                blob_added_count += 1
+            else:
+                # open exceptions file and put there updated line
+                exceptions_file = "Exceptions_" + country_code + tenant_name + ".txt"
+                exceptions = open(exceptions_file, "a+")
+                exceptions.write(source_filename + "\n")
+                exceptions.close()
             progress(j, len(set_to_add), status="Uploading missing files to the blob")
             j += 1
         print("\n" + str(blob_added_count) + " files have been uploaded")
