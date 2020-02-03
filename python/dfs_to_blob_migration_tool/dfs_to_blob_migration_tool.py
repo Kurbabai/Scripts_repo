@@ -15,7 +15,6 @@ connect_str_from_passwordstate = input("Please enter the connection string from 
 original_file = country_code + tenant_name + ".txt"
 dest_file = environment_code.upper() + country_code.upper() + tenant_name.upper() + "-" + time.strftime(
     "%Y_%m_%d-%H%M%S") + ".txt"
-# dfs_share = "\\\\rnour-lp\\p-us-binaries\\ppf-data0"
 dfs_share = "\\\\iglooprod.global\\p-" + country_code + "-binaries\\" + tenant_name + "-data0"
 account_name_prefix = company_name + environment_code + country_code + tenant_name + "binariessa"
 
