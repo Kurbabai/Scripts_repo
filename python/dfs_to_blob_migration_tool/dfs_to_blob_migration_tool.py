@@ -55,8 +55,6 @@ def main():
                         w = open(dest_file, "a+")
                         w.write(file_path_url + "\n")
                         w.close()
-                        progress(i, num_lines, status="Reading files from the original list")
-                        i += 1
                         num_lines_with_multipage += files_amount_in_line
                     else:
                         # split line per "\" character and create split list
@@ -75,8 +73,8 @@ def main():
                             w.close()
                             j += 1
                         num_lines_with_multipage += files_amount_in_line
-                        progress(i, num_lines, status="Reading files from the original list")
-                        i += 1
+                progress(i, num_lines, status="Reading files from the original list")
+                i += 1
         f.close()
         account_num = 1
         print("\n" + "Total files in original file after counting multipage files : " + str(
