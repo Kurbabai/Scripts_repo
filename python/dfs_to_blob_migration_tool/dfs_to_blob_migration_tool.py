@@ -73,8 +73,8 @@ def main():
                             w.close()
                             j += 1
                         num_lines_with_multipage += files_amount_in_line
-                progress(i, num_lines, status="Reading files from the original list")
-                i += 1
+                    progress(i, num_lines, status="Reading files from the original list")
+                    i += 1
         f.close()
         account_num = 1
         print("\n" + "Total files in original file after counting multipage files : " + str(
