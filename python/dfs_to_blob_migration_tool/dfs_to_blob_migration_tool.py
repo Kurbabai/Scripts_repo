@@ -26,6 +26,7 @@ def main():
         # open the original_file and read content
         num_lines = rawincount(original_file) + 1
         print("Total files in original file : " + str(num_lines) + "\n")
+        print("\n. Job started at " + time.strftime("%Y_%m_%d-%H%M%S") + "\n")
         file_name_set = set()
         blob_name_set = set()
         f = open(original_file, "r")
@@ -129,7 +130,7 @@ def main():
                 exceptions.close()
             progress(j, len(set_to_add), status="Uploading missing files to the blob")
             j += 1
-        print("\n" + str(blob_added_count) + " files have been uploaded")
+        print("\n" + str(blob_added_count) + " files have been uploaded. Job finished at " + time.strftime("%Y_%m_%d-%H%M%S") + "\n")
         # Deleting unused files from the blob
         blob_deleted_count = 0
         k = 0
