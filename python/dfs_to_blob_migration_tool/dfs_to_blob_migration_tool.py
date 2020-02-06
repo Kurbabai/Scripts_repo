@@ -123,7 +123,7 @@ def main():
                 blob_added_count += 1
             else:
                 # open exceptions file and put there updated line
-                exceptions_file = "Exceptions_" + country_code + tenant_name + "_" + time.strftime("%Y_%m_%d-%H%M%S") + ".txt"
+                exceptions_file = "Exceptions_" + country_code + tenant_name + "_" + time.strftime("%Y_%m_%d") + ".txt"
                 exceptions = open(exceptions_file, "a+")
                 exceptions.write(source_filename + "\n")
                 exceptions.close()
