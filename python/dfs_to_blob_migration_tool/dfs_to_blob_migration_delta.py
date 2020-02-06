@@ -15,7 +15,7 @@ original_file = input("Please input delta file: ")
 connect_str_from_passwordstate = input("Please enter the connection string from PasswordState: ")
 
 dest_file = environment_code.upper() + country_code.upper() + tenant_name.upper() + "_" + time.strftime(
-    "%Y_%m_%d-%H%M%S") + "delta" + ".txt"
+    "%Y_%m_%d-%H%M%S") + "_delta" + ".txt"
 dfs_share = "\\\\iglooprod.global\\p-" + country_code + "-binaries\\" + tenant_name + "-data0"
 account_name_prefix = company_name + environment_code + country_code + tenant_name + "binariessa"
 
