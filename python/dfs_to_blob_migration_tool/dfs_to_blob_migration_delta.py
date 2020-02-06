@@ -11,8 +11,9 @@ company_name = "igloo"
 environment_code = "p"
 country_code = input("Please enter country code: ")
 tenant_name = input("Please enter tenant name: ")
+original_file = input("Please input delta file: ")
 connect_str_from_passwordstate = input("Please enter the connection string from PasswordState: ")
-original_file = country_code + tenant_name + ".txt"
+
 dest_file = environment_code.upper() + country_code.upper() + tenant_name.upper() + "_" + time.strftime(
     "%Y_%m_%d-%H%M%S") + "delta" + ".txt"
 dfs_share = "\\\\iglooprod.global\\p-" + country_code + "-binaries\\" + tenant_name + "-data0"
