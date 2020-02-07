@@ -26,7 +26,7 @@ def main():
         # open the original_file and read content
         num_lines = rawincount(original_file) + 1
         print("Total files in original file : " + str(num_lines) + "\n")
-        print("\n. Job started at " + time.strftime("%Y_%m_%d-%H%M%S") + "\n")
+        print("\n Job started at " + time.strftime("%Y_%m_%d-%H%M%S") + "\n")
         file_name_set = set()
         blob_name_set = set()
         f = open(original_file, "r")
