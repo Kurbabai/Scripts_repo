@@ -81,7 +81,7 @@ def main():
         #account_num = 1
         print("\n" + "Total files in original file after counting multipage files : " + str(
             num_lines_with_multipage) + "\n")
-         Get the list of blobs from every container of every storage account
+        #Get the list of blobs from every container of every storage account
         while account_num <= 32:
             if account_num <= 9:
                 account_name = account_name_prefix + "0" + str(account_num)
