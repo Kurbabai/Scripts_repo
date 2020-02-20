@@ -22,7 +22,7 @@ account_name_prefix = company_name + environment_code + country_code + tenant_na
 
 def main():
     try:
-        i = 0
+        reading_progress = 0
         num_lines_with_multipage = 0
         # open the original_file and read content
         num_lines = rawincount(original_file) + 1
@@ -34,51 +34,51 @@ def main():
         if f.mode == "r":
             # readlines reads the individual lines
             line = f.readlines()
-            while i < num_lines:
-                for x in line:
-                    # Remove \n characters from the line
-                    x = x.translate({ord('\n'): None})
-                    # split line per "," character and create split file path list
-                    split_file_path_list = x.split(",")
-                    file_path = split_file_path_list[0]
-                    files_amount_in_line = int(split_file_path_list[1])
-                    if files_amount_in_line == 1:
-                        # split line per "\" character and create split list
-                        split_list = file_path.split("\\")
-                        container_name = split_list[5]
-                        account_name = account_name_prefix + str(container_hex(split_list[6][:2]))
-                        if os.path.isfile(file_path):
-                            file_name = split_list[6] + "/" + split_list[7] + "/" + split_list[8]
-                        else:
-                            file_name = split_list[6] + "/" + split_list[7] + "/" + split_list[8] + "/1"
+            #while i < num_lines:
+            for x in line:
+                # Remove \n characters from the line
+                x = x.translate({ord('\n'): None})
+                # split line per "," character and create split file path list
+                split_file_path_list = x.split(",")
+                file_path = split_file_path_list[0]
+                files_amount_in_line = int(split_file_path_list[1])
+                if files_amount_in_line == 1:
+                    # split line per "\" character and create split list
+                    split_list = file_path.split("\\")
+                    container_name = split_list[5]
+                    account_name = account_name_prefix + str(container_hex(split_list[6][:2]))
+                    if os.path.isfile(file_path):
+                        file_name = split_list[6] + "/" + split_list[7] + "/" + split_list[8]
+                    else:
+                        file_name = split_list[6] + "/" + split_list[7] + "/" + split_list[8] + "/1"
+                    file_path_url = "https://" + account_name + ".blob.core.windows.net/" + container_name + "/" + file_name
+                    file_name_set.add(file_path_url)
+                    # open destination file and put there updated line
+                    w = open(dest_file, "a+")
+                    w.write(file_path_url + "\n")
+                    w.close()
+                    num_lines_with_multipage += files_amount_in_line
+                else:
+                    # split line per "\" character and create split list
+                    split_list = file_path.split("\\")
+                    container_name = split_list[5]
+                    account_name = account_name_prefix + str(container_hex(split_list[6][:2]))
+                    j = 1
+                    while j <= files_amount_in_line:
+                        file_name = split_list[6] + "/" + split_list[7] + "/" + split_list[8] + "/" + str(
+                            j)
                         file_path_url = "https://" + account_name + ".blob.core.windows.net/" + container_name + "/" + file_name
                         file_name_set.add(file_path_url)
                         # open destination file and put there updated line
                         w = open(dest_file, "a+")
                         w.write(file_path_url + "\n")
                         w.close()
-                        num_lines_with_multipage += files_amount_in_line
-                    else:
-                        # split line per "\" character and create split list
-                        split_list = file_path.split("\\")
-                        container_name = split_list[5]
-                        account_name = account_name_prefix + str(container_hex(split_list[6][:2]))
-                        j = 1
-                        while j <= files_amount_in_line:
-                            file_name = split_list[6] + "/" + split_list[7] + "/" + split_list[8] + "/" + str(
-                                j)
-                            file_path_url = "https://" + account_name + ".blob.core.windows.net/" + container_name + "/" + file_name
-                            file_name_set.add(file_path_url)
-                            # open destination file and put there updated line
-                            w = open(dest_file, "a+")
-                            w.write(file_path_url + "\n")
-                            w.close()
-                            j += 1
-                        num_lines_with_multipage += files_amount_in_line
-                    progress(i, num_lines, status="Reading files from the original list")
-                    i += 1
+                        j += 1
+                    num_lines_with_multipage += files_amount_in_line
+                progress(reading_progress, num_lines, status="Reading files from the original list")
+                reading_progress += 1
         f.close()
-        account_num = 1
+        #account_num = 1
         print("\n" + "Total files in original file after counting multipage files : " + str(
             num_lines_with_multipage) + "\n")
         # Get the list of blobs from every container of every storage account
@@ -98,7 +98,7 @@ def main():
         #print("\n" + "Total files in storage accounts: " + str(len(blob_name_set)) + "\n")
         # Uploading missing files to the blob
         blob_added_count = 0
-        j = 0
+        upload_progress = 0
         for blob in set_to_add:
             # split line per "/" character and create split list
             blob_split_list = blob.split("/")
@@ -128,8 +128,8 @@ def main():
                 exceptions = open(exceptions_file, "a+")
                 exceptions.write(source_filename + "\n")
                 exceptions.close()
-            progress(j, len(set_to_add), status="Uploading missing files to the blob")
-            j += 1
+            progress(upload_progress, len(set_to_add), status="Uploading missing files to the blob")
+            upload_progress += 1
         print("\n" + str(blob_added_count) + " files have been uploaded. Job finished at " + time.strftime("%Y_%m_%d-%H%M%S") + "\n")
         # Deleting unused files from the blob
         #blob_deleted_count = 0
