@@ -95,7 +95,7 @@ def main():
         #set_to_remove = blob_name_set - file_name_set
         set_to_add = file_name_set - blob_name_set
         print("\n" + "Total files in File name set: " + str(len(file_name_set)) + "\n")
-        #print("\n" + "Total files in storage accounts: " + str(len(blob_name_set)) + "\n")
+        print("\n" + "Total files in storage accounts: " + str(len(blob_name_set)) + "\n")
         # Uploading missing files to the blob
         blob_added_count = 0
         upload_progress = 0
