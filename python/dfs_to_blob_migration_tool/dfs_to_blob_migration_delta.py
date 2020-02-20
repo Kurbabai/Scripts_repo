@@ -82,21 +82,20 @@ def main():
         print("\n" + "Total files in original file after counting multipage files : " + str(
             num_lines_with_multipage) + "\n")
         # Get the list of blobs from every container of every storage account
-        while account_num <= 32:
-            if account_num <= 9:
-                account_name = account_name_prefix + "0" + str(account_num)
-            else:
-                account_name = account_name_prefix + str(account_num)
-            for blob_name_line in azure_blob_file_list(account_name, azure_connection_string(account_name,
-                                                                                             connect_str_from_passwordstate)):
-                if blob_name_line is not None:
-                    blob_name_set.add(blob_name_line)
-            account_num += 1
+        #while account_num <= 32:
+            #if account_num <= 9:
+                #account_name = account_name_prefix + "0" + str(account_num)
+            #else:
+                #account_name = account_name_prefix + str(account_num)
+            #for blob_name_line in azure_blob_file_list(account_name, azure_connection_string(account_name, connect_str_from_passwordstate)):
+                #if blob_name_line is not None:
+                    #blob_name_set.add(blob_name_line)
+            #account_num += 1
         # Determining the list of files need to be added and deleted to / from blobs
         #set_to_remove = blob_name_set - file_name_set
         set_to_add = file_name_set - blob_name_set
         print("\n" + "Total files in File name set: " + str(len(file_name_set)) + "\n")
-        print("\n" + "Total files in storage accounts: " + str(len(blob_name_set)) + "\n")
+        #print("\n" + "Total files in storage accounts: " + str(len(blob_name_set)) + "\n")
         # Uploading missing files to the blob
         blob_added_count = 0
         j = 0
