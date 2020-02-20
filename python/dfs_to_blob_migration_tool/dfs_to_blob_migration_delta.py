@@ -78,7 +78,7 @@ def main():
                 progress(reading_progress, num_lines, status="Reading files from the original list")
                 reading_progress += 1
         f.close()
-        #account_num = 1
+        account_num = 1
         print("\n" + "Total files in original file after counting multipage files : " + str(
             num_lines_with_multipage) + "\n")
         #Get the list of blobs from every container of every storage account
