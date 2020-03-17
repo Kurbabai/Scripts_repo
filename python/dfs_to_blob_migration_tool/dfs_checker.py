@@ -54,7 +54,7 @@ def main():
                 else:
                     j = 1
                     while j <= files_amount_in_line:
-                        file_name = file_path + "/" + j
+                        file_name = file_path + "/" + str(j)
                         if os.path.isfile(file_name):
                             w = open(existing_dest_file, "a+")
                             w.write(file_name + "\n")
