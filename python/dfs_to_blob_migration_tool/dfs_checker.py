@@ -5,12 +5,13 @@ from itertools import (takewhile, repeat)
 import time
 
 # Declare variables
-original_file = input("Please input delta file: ")
+original_file = input("Please input source file: ")
 
 missing_dest_file = original_file + "_missing_" + time.strftime(
     "%Y_%m_%d") + ".txt"
 existing_dest_file = original_file + "_existing_" + time.strftime(
     "%Y_%m_%d") + ".txt"
+
 
 def main():
     try:
@@ -25,7 +26,7 @@ def main():
         if f.mode == "r":
             # readlines reads the individual lines
             line = f.readlines()
-            #while i < num_lines:
+            # while i < num_lines:
             for x in line:
                 # Remove \n characters from the line
                 x = x.translate({ord('\n'): None})
@@ -35,11 +36,11 @@ def main():
                 files_amount_in_line = int(split_file_path_list[1])
                 if files_amount_in_line == 1:
                     if os.path.isdir(file_path):
-                       if os.path.isfile(file_path + "/1"):
+                        if os.path.isfile(file_path + "/1"):
                             w = open(existing_dest_file, "a+")
                             w.write(file_path + "/1" + "\n")
                             w.close()
-                       else:
+                        else:
                             w = open(missing_dest_file, "a+")
                             w.write(file_path + "/1" + "\n")
                             w.close()
@@ -68,10 +69,12 @@ def main():
                 reading_progress += 1
                 num_lines_with_multipage += files_amount_in_line
         f.close()
-        print("\n" + "Total files in original file after counting multipage files : " + str(num_lines_with_multipage) + "\n")
+        print("\n" + "Total files in original file after counting multipage files : " + str(
+            num_lines_with_multipage) + "\n")
     except Exception as ex:
         print('Exception in main:')
         print(ex)
+
 
 def progress(count, total, status=''):
     try:
