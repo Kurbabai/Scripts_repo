@@ -47,14 +47,15 @@ def main():
                 account_name = account_name_prefix + str(container_hex(split_list[6][:2]))
                 if files_amount_in_line == 1:
                     if os.path.isdir(file_path):
-                        if os.path.isfile(file_path + "\\1"):
-                            dfs_path = file_path + "\\1"
+                        file_name = file_path + "\\1"
+                        if os.path.isfile(file_name):
+                            dfs_path = file_name
                             blob_name = convert_dfs_path_to_url(dfs_path)
                             file_upload_to_blob(account_name, container_name, blob_name, dfs_path)
                             blob_added_count += 1
                         else:
                             w = open(missing_dest_file, "a+")
-                            w.write(file_path + "\\1" + "\n")
+                            w.write(file_name + "\n")
                             w.close()
                     elif os.path.isfile(file_path):
                         dfs_path = file_path
