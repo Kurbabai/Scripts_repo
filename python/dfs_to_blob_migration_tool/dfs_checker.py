@@ -6,7 +6,6 @@ import time
 
 # Declare variables
 original_file = input("Please input source file: ")
-
 missing_dest_file = original_file + "_missing_" + time.strftime(
     "%Y_%m_%d") + ".txt"
 existing_dest_file = original_file + "_existing_" + time.strftime(
@@ -54,7 +53,7 @@ def main():
                 else:
                     j = 1
                     while j <= files_amount_in_line:
-                        file_name = file_path + "/" + str(j)
+                        file_name = file_path + "\\" + str(j)
                         if os.path.isfile(file_name):
                             w = open(existing_dest_file, "a+")
                             w.write(file_name + "\n")
