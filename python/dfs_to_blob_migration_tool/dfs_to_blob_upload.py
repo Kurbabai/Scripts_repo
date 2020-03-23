@@ -99,9 +99,11 @@ def convert_dfs_path_to_url(dfs_path):
         account_name = account_name_prefix + str(container_hex(split_dfs_path[6][:2]))
         if split_dfs_path[8]:
             url_path = "https://" + account_name + ".blob.core.windows.net/" + container_name + "/" + split_dfs_path[6] + "/" + split_dfs_path[7] + "/" + split_dfs_path[8]
+            blob_name = split_dfs_path[6] + "/" + split_dfs_path[7] + "/" + split_dfs_path[8]
         else:
             url_path = "https://" + account_name + ".blob.core.windows.net/" + container_name + "/" + split_dfs_path[6] + "/" + split_dfs_path[7]
-        return url_path
+            blob_name = split_dfs_path[6] + "/" + split_dfs_path[7]
+        return blob_name
 
     except Exception as ex:
         print('Exception in convert_dfs_path_to_url:')
