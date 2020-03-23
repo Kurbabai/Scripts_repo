@@ -93,8 +93,8 @@ def main():
 def convert_dfs_path_to_url(dfs_path):
     try:
         split_dfs_path = dfs_path.split("\\")
-        container_name = split_list[5]
-        account_name = account_name_prefix + str(container_hex(split_list[6][:2]))
+        container_name = split_dfs_path[5]
+        account_name = account_name_prefix + str(container_hex(split_dfs_path[6][:2]))
         if split_dfs_path[8]:
             url_path = "https://" + account_name + ".blob.core.windows.net/" + container_name + "/" + split_dfs_path[6] + "/" + split_dfs_path[7] + "/" + split_dfs_path[8]
         else:
