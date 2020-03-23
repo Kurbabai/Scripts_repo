@@ -1,4 +1,6 @@
 # import libraries
+from azure.storage.blob import BlobServiceClient, BlobClient, ContainerClient
+import json
 import os
 import sys
 from itertools import (takewhile, repeat)
