@@ -35,13 +35,13 @@ def main():
                 files_amount_in_line = int(split_file_path_list[1])
                 if files_amount_in_line == 1:
                     if os.path.isdir(file_path):
-                        if os.path.isfile(file_path + "/1"):
+                        if os.path.isfile(file_path + "\\1"):
                             w = open(existing_dest_file, "a+")
-                            w.write(file_path + "/1" + "\n")
+                            w.write(file_path + "\\1" + "\n")
                             w.close()
                         else:
                             w = open(missing_dest_file, "a+")
-                            w.write(file_path + "/1" + "\n")
+                            w.write(file_path + "\\1" + "\n")
                             w.close()
                     elif os.path.isfile(file_path):
                         w = open(existing_dest_file, "a+")
