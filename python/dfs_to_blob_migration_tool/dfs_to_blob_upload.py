@@ -219,13 +219,9 @@ def progress(count, total, status=''):
 
 
 def rawincount(filename):
-    try:
-        f = open(filename, 'rb')
-        bufgen = takewhile(lambda x: x, (f.raw.read(1024 * 1024) for _ in repeat(None)))
-        return sum(buf.count(b'\n') for buf in bufgen)
-    except Exception as ex:
-        print('Exception in function rawincount:')
-        print(ex)
+    f = open(filename, 'rb')
+    bufgen = takewhile(lambda x: x, (f.raw.read(1024 * 1024) for _ in repeat(None)))
+    return sum(buf.count(b'\n') for buf in bufgen)
 
 
 if __name__ == "__main__":
