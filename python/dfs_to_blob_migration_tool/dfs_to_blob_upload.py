@@ -239,7 +239,7 @@ def rawcount(filename):
             lines += buf.count(b'\n')
             buf = read_f(buf_size)
         return lines
-   except Exception as ex:
+    except Exception as ex:
         print('Exception in function rawcount:')
         print(ex)
 
