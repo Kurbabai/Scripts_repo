@@ -27,7 +27,7 @@ def main():
         num_lines_with_multipage = 0
         blob_added_count = 0
         # open the original_file and read content
-        num_lines = rawincount(original_file) + 1
+        num_lines = rawcount(original_file) + 1
         print("Total files in original file : " + str(num_lines) + "\n")
         print("\n Job started at " + time.strftime("%Y_%m_%d-%H%M%S") + "\n")
         f = open(original_file, "r")
@@ -219,10 +219,29 @@ def progress(count, total, status=''):
 
 
 def rawincount(filename):
-    f = open(filename, 'rb')
-    bufgen = takewhile(lambda x: x, (f.raw.read(1024 * 1024) for _ in repeat(None)))
-    return sum(buf.count(b'\n') for buf in bufgen)
+    try:
+        f = open(filename, 'rb')
+        bufgen = takewhile(lambda x: x, (f.raw.read(1024 * 1024) for _ in repeat(None)))
+        return sum(buf.count(b'\n') for buf in bufgen)
+    except Exception as ex:
+        print('Exception in function rawincount:')
+        print(ex)
 
+def rawcount(filename):
+    try:
+        f = open(filename, 'rb')
+        lines = 0
+        buf_size = 1024 * 1024
+        read_f = f.raw.read
+
+        buf = read_f(buf_size)
+        while buf:
+            lines += buf.count(b'\n')
+            buf = read_f(buf_size)
+        return lines
+   except Exception as ex:
+        print('Exception in function rawcount:')
+        print(ex)
 
 if __name__ == "__main__":
     main()
