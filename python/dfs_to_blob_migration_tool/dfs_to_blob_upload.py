@@ -1,9 +1,9 @@
 # import libraries
+from azure.core.exceptions import ResourceExistsError
 from azure.storage.blob import BlobServiceClient, BlobClient, ContainerClient
 import json
 import os
 import sys
-from itertools import (takewhile, repeat)
 import time
 
 # Declare variables
@@ -27,8 +27,8 @@ def main():
         num_lines_with_multipage = 0
         blob_added_count = 0
         # open the original_file and read content
-        num_lines = rawcount(original_file) + 1
-        print("Total files in original file : " + str(num_lines) + "\n")
+        num_lines = rawcount(original_file)
+        print("Total lines in the original file : " + str(num_lines) + "\n")
         print("\n Job started at " + time.strftime("%Y_%m_%d-%H%M%S") + "\n")
         f = open(original_file, "r")
         if f.mode == "r":
@@ -98,12 +98,14 @@ def convert_dfs_path_to_url(dfs_path):
         split_dfs_path = dfs_path.split("\\")
         container_name = split_dfs_path[5]
         account_name = account_name_prefix + str(container_hex(split_dfs_path[6][:2]))
-        if split_dfs_path[8]:
+        if len(split_dfs_path) == 10:
+            url_path = "https://" + account_name + ".blob.core.windows.net/" + container_name + "/" + split_dfs_path[6] + "/" + split_dfs_path[7] + "/" + split_dfs_path[8] + "/" + split_dfs_path[9]
+            blob_name = split_dfs_path[6] + "/" + split_dfs_path[7] + "/" + split_dfs_path[8] + "/" + split_dfs_path[9]
+        elif len(split_dfs_path) == 9:
             url_path = "https://" + account_name + ".blob.core.windows.net/" + container_name + "/" + split_dfs_path[6] + "/" + split_dfs_path[7] + "/" + split_dfs_path[8]
             blob_name = split_dfs_path[6] + "/" + split_dfs_path[7] + "/" + split_dfs_path[8]
         else:
-            url_path = "https://" + account_name + ".blob.core.windows.net/" + container_name + "/" + split_dfs_path[6] + "/" + split_dfs_path[7]
-            blob_name = split_dfs_path[6] + "/" + split_dfs_path[7]
+            Print('DFS path has incorrect amount of subfolders')
         return blob_name
 
     except Exception as ex:
@@ -115,11 +117,13 @@ def file_upload_to_blob(account_name, container_name, blob_name, dfs_path):
     try:
         blob_client = BlobClient.from_connection_string(conn_str=azure_connection_string(account_name, connect_str_from_passwordstate), container_name=container_name, blob_name=blob_name)
         blob_client.upload_blob(dfs_path)
-    #return upload_result
 
     except Exception as ex:
-        print('Exception in file_upload_to_blob:')
-        print(ex)
+        if isinstance(ex, ResourceExistsError):
+            pass
+        else:
+             print('Exception in file_upload_to_blob:')
+             print(ex)
 
 
 def azure_connection_string(account_name, connect_str_from_passwordstate):
