@@ -51,8 +51,9 @@ def main():
                         if os.path.isfile(file_name):
                             dfs_path = file_name
                             blob_name = convert_dfs_path_to_url(dfs_path)
-                            file_upload_to_blob(account_name, container_name, blob_name, dfs_path)
-                            blob_added_count += 1
+                            is_uploaded = file_upload_to_blob(account_name, container_name, blob_name, dfs_path)
+                            if is_uploaded:
+                                blob_added_count += 1
                         else:
                             w = open(missing_dest_file, "a+")
                             w.write(file_name + "\n")
@@ -60,8 +61,9 @@ def main():
                     elif os.path.isfile(file_path):
                         dfs_path = file_path
                         blob_name = convert_dfs_path_to_url(dfs_path)
-                        file_upload_to_blob(account_name, container_name, blob_name, dfs_path)
-                        blob_added_count += 1
+                        is_uploaded = file_upload_to_blob(account_name, container_name, blob_name, dfs_path)
+                        if is_uploaded:
+                            blob_added_count += 1
                     else:
                         w = open(missing_dest_file, "a+")
                         w.write(file_path + "\n")
@@ -73,8 +75,9 @@ def main():
                         if os.path.isfile(file_name):
                             dfs_path = file_name
                             blob_name = convert_dfs_path_to_url(dfs_path)
-                            file_upload_to_blob(account_name, container_name, blob_name, dfs_path)
-                            blob_added_count += 1
+                            is_uploaded = file_upload_to_blob(account_name, container_name, blob_name, dfs_path)
+                            if is_uploaded:
+                                blob_added_count += 1
                         else:
                             w = open(missing_dest_file, "a+")
                             w.write(file_name + "\n")
@@ -117,7 +120,7 @@ def file_upload_to_blob(account_name, container_name, blob_name, dfs_path):
     try:
         blob_client = BlobClient.from_connection_string(conn_str=azure_connection_string(account_name, connect_str_from_passwordstate), container_name=container_name, blob_name=blob_name)
         blob_client.upload_blob(dfs_path)
-
+        return True
     except Exception as ex:
         if isinstance(ex, ResourceExistsError):
             pass
