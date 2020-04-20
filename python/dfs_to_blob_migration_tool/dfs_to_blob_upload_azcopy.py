@@ -120,7 +120,8 @@ def file_upload_to_blob(account_name, container_name, blob_name, dfs_path):
         #blob_client = BlobClient.from_connection_string(conn_str=azure_connection_string(account_name, connect_str_from_passwordstate), container_name=container_name, blob_name=blob_name)
         #blob_client.upload_blob(dfs_path)
         command = "C://Temp//azcopy.exe"
-        params = "copy " + dfs_path + " " + "https://" + account_name + ".blob.core.windows.net/" + container_name + "/" + blob_name + " --log-level=NONE > $null 2>&1"
+        params = "copy " + dfs_path + " " + "https://" + account_name + ".blob.core.windows.net/" + container_name + "/" + blob_name + " &>> " "_log_" + time.strftime(
+    "%Y_%m_%d") + ".txt"
         os.system(command+" "+params)
         return True
     except Exception as ex:
