@@ -1,6 +1,6 @@
 # import libraries
 from azure.core.exceptions import ResourceExistsError
-from azure.storage.blob import BlobServiceClient, BlobClient, ContainerClient, BlockBlobService, BlobProperties
+from azure.storage.blob import BlobServiceClient, BlobClient, ContainerClient, BlobProperties
 import json
 import os
 import sys
