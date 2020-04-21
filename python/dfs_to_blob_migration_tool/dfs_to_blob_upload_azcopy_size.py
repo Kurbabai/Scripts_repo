@@ -7,7 +7,7 @@ import sys
 import time
 import hashlib
 import base64
-
+import requests
 
 # Declare variables
 
@@ -184,7 +184,10 @@ def get_blob_file_size(account_name, container_name, blob_name):
             #length = BlobProperties.get_blob_properties(blob_properties,container_name,blob_name).properties.size
             #print("\t Blob name: " + blob_name)
             #print(length)
-        length = blob_properties.size
+        #length = blob_properties.size
+        url = "https://" + account_name + ".blob.core.windows.net/" + container_name + "/" + blob_name
+        r = requests.get(url)
+        length = r.Content-Length
         print("\t Blob name: " + blob_name)
         print("\t Blob size: " + str(length))
         return length
