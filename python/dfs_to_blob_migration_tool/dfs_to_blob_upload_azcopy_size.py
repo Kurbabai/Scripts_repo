@@ -176,7 +176,7 @@ def get_dfs_file_size(fname):
 
 def get_blob_file_size(account_name, container_name, blob_name):
     try:
-        blob_properties = BlobProperties.from_connection_string(conn_str=azure_connection_string(account_name, connect_str_from_passwordstate), container_name=container_name, blob_name=blob_name)
+        blob_properties = BlobProperties(conn_str=azure_connection_string(account_name, connect_str_from_passwordstate), container_name=container_name, blob_name=blob_name)
         #block_blob_service = BlockBlobService(account_name= account_name, account_key=azure_connection_string(account_name, connect_str_from_passwordstate))
         #block_blob_service.create_container(container_name)
         generator = blob_properties.list_blobs(container_name)
