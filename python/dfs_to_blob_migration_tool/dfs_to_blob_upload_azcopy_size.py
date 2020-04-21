@@ -53,8 +53,7 @@ def main():
                         if os.path.isfile(file_name):
                             dfs_path = file_name
                             blob_name = convert_dfs_path_to_url(dfs_path)
-                            dfs_file_size = get_dfs_file_size(dfs_path)
-                            is_uploaded = file_upload_to_blob(account_name, container_name, blob_name, dfs_path, dfs_file_size)
+                            is_uploaded = file_upload_to_blob(account_name, container_name, blob_name, dfs_path)
                             if is_uploaded:
                                 blob_added_count += 1
                         else:
@@ -64,8 +63,7 @@ def main():
                     elif os.path.isfile(file_path):
                         dfs_path = file_path
                         blob_name = convert_dfs_path_to_url(dfs_path)
-                        dfs_file_size = get_dfs_file_size(dfs_path)
-                        is_uploaded = file_upload_to_blob(account_name, container_name, blob_name, dfs_path, dfs_file_size)
+                        is_uploaded = file_upload_to_blob(account_name, container_name, blob_name, dfs_path)
                         if is_uploaded:
                             blob_added_count += 1
                     else:
@@ -79,8 +77,7 @@ def main():
                         if os.path.isfile(file_name):
                             dfs_path = file_name
                             blob_name = convert_dfs_path_to_url(dfs_path)
-                            dfs_file_size = get_dfs_file_size(dfs_path)
-                            is_uploaded = file_upload_to_blob(account_name, container_name, blob_name, dfs_path, dfs_file_size)
+                            is_uploaded = file_upload_to_blob(account_name, container_name, blob_name, dfs_path)
                             if is_uploaded:
                                 blob_added_count += 1
                         else:
@@ -121,11 +118,13 @@ def convert_dfs_path_to_url(dfs_path):
         print(ex)
 
 
-def file_upload_to_blob(account_name, container_name, blob_name, dfs_path, dfs_file_size, blob_file_size):
+def file_upload_to_blob(account_name, container_name, blob_name, dfs_path):
     try:
         #blob_client = BlobClient.from_connection_string(conn_str=azure_connection_string(account_name, connect_str_from_passwordstate), container_name=container_name, blob_name=blob_name)
         #blob_client.upload_blob(dfs_path)
         #if dfs_md5 == get_md5_from_the_blob(blob_name):
+        dfs_file_size = get_dfs_file_size(dfs_path)
+        blob_file_size = get_blob_file_size(account_name, container_name, blob_name)
         if blob_file_size != dfs_file_size:
             print("DFS File size for " + dfs_path + " is : " + str(dfs_file_size))
             command = "C://Temp//azcopy.exe"
