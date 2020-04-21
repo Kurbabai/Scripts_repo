@@ -176,26 +176,16 @@ def get_dfs_file_size(fname):
 
 def get_blob_file_size(account_name, container_name, blob_name):
     try:
-        blob_properties = BlobProperties(conn_str=azure_connection_string(account_name, connect_str_from_passwordstate), container_name=container_name, blob_name=blob_name)
-        #block_blob_service = BlockBlobService(account_name= account_name, account_key=azure_connection_string(account_name, connect_str_from_passwordstate))
-        #block_blob_service.create_container(container_name)
-        #generator = blob_properties.list_blobs(container_name)
-        #for blob in generator:
-            #length = BlobProperties.get_blob_properties(blob_properties,container_name,blob_name).properties.size
-            #print("\t Blob name: " + blob_name)
-            #print(length)
-        #length = blob_properties.size
-        url = "https://" + account_name + ".blob.core.windows.net/" + container_name + "/" + blob_name
-        #ploads = {'Authorization':'GlpzxIL0KzIXjzzyzQmH4yCMsZgcjWcFr9nskIitBMf4N6dS2MsVYkwWj3QLpbwJtpY4qx17ZVmzFwpgzVR6Wg=='}
-        #r = requests.get(url, params = ploads)
-        r = requests.get(url)
-        length = r.text
+        blob_client = BlobClient.from_connection_string(conn_str=azure_connection_string(account_name, connect_str_from_passwordstate), container_name=container_name, blob_name=blob_name)
+        blob_properties = blob_client.get_blob_properties()
+        length = blob_properties.size
         print("\t Blob name: " + blob_name)
         print("\t Blob size: " + str(length))
         return length
     except Exception as ex:
         print('Exception in function blob_file_size:')
         print(ex)
+
 
 
 def get_md5_for_dfs_file(fname):
