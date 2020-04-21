@@ -124,13 +124,14 @@ def file_upload_to_blob(account_name, container_name, blob_name, dfs_path):
         #blob_client.upload_blob(dfs_path)
         #if dfs_md5 == get_md5_from_the_blob(blob_name):
         dfs_file_size = get_dfs_file_size(dfs_path)
-        blob_file_size = get_blob_file_size(account_name, container_name, blob_name)
+
+        blob_file_size = get_blob_size(account_name, container_name, blob_name)
         if blob_file_size != dfs_file_size:
             #print("DFS File size for " + dfs_path + " is : " + str(dfs_file_size))
             command = "C://Temp//azcopy.exe"
             params = "copy " + dfs_path + " " + "https://" + account_name + ".blob.core.windows.net/" + container_name + "/" + blob_name + " --log-level=NONE >> " + original_file + "_log_" + time.strftime("%Y_%m_%d") + ".txt"
             os.system(command+" "+params)
-            #print("Blob file size for " + blob_name + " is : " + str(get_blob_file_size(account_name, container_name, blob_name)))
+            #print("Blob file size for " + blob_name + " is : " + str(get_blob_size(account_name, container_name, blob_name)))
             return True
         else:
             pass
@@ -174,7 +175,7 @@ def get_dfs_file_size(fname):
         print(ex)
 
 
-def get_blob_file_size(account_name, container_name, blob_name):
+def get_blob_size(account_name, container_name, blob_name):
     try:
         blob_client = BlobClient.from_connection_string(conn_str=azure_connection_string(account_name, connect_str_from_passwordstate), container_name=container_name, blob_name=blob_name)
         blob_properties = blob_client.get_blob_properties()
@@ -183,8 +184,12 @@ def get_blob_file_size(account_name, container_name, blob_name):
         #print("\t Blob size: " + str(length))
         return length
     except Exception as ex:
-        print('Exception in function blob_file_size:')
-        print(ex)
+        if isinstance(ex, ResourceExistsError):
+            length = -1
+            return length
+        else:
+            print('Exception in get_blob_size for file ' + dfs_path + ' :')
+            print(ex)
 
 
 
