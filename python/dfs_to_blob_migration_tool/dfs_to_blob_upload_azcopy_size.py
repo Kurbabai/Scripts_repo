@@ -186,9 +186,9 @@ def get_blob_file_size(account_name, container_name, blob_name):
             #print(length)
         #length = blob_properties.size
         url = "https://" + account_name + ".blob.core.windows.net/" + container_name + "/" + blob_name
-        pload = {'Authorization':'GlpzxIL0KzIXjzzyzQmH4yCMsZgcjWcFr9nskIitBMf4N6dS2MsVYkwWj3QLpbwJtpY4qx17ZVmzFwpgzVR6Wg=='}
-        r = requests.get(url, data = pload)
-        length = r.headers
+        ploads = {'Authorization':'GlpzxIL0KzIXjzzyzQmH4yCMsZgcjWcFr9nskIitBMf4N6dS2MsVYkwWj3QLpbwJtpY4qx17ZVmzFwpgzVR6Wg=='}
+        r = requests.get(url, params = ploads)
+        length = r.text
         print("\t Blob name: " + blob_name)
         print("\t Blob size: " + str(length))
         return length
