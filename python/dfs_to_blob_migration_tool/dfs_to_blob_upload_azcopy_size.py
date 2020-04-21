@@ -179,8 +179,8 @@ def get_blob_file_size(account_name, container_name, blob_name):
         blob_client = BlobClient.from_connection_string(conn_str=azure_connection_string(account_name, connect_str_from_passwordstate), container_name=container_name, blob_name=blob_name)
         blob_properties = blob_client.get_blob_properties()
         length = blob_properties.size
-        print("\t Blob name: " + blob_name)
-        print("\t Blob size: " + str(length))
+        #print("\t Blob name: " + blob_name)
+        #print("\t Blob size: " + str(length))
         return length
     except Exception as ex:
         print('Exception in function blob_file_size:')
