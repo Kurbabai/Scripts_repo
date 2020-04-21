@@ -1,5 +1,5 @@
 # import libraries
-from azure.core.exceptions import ResourceExistsError
+from azure.core.exceptions import ResourceExistsError, ResourceNotFoundError
 from azure.storage.blob import BlobServiceClient, BlobClient, ContainerClient, BlobProperties, PartialBatchErrorException
 import json
 import os
@@ -178,15 +178,13 @@ def get_dfs_file_size(fname):
 def get_blob_size(account_name, container_name, blob_name):
     try:
         blob_client = BlobClient.from_connection_string(conn_str=azure_connection_string(account_name, connect_str_from_passwordstate), container_name=container_name, blob_name=blob_name)
-        blob_exist = blob_client.get_blob_properties.exist()
-        if blob_exist:
-            blob_properties = blob_client.get_blob_properties()
-            length = blob_properties.size
-            #print("\t Blob name: " + blob_name)
-                #print("\t Blob size: " + str(length))
-            return length
+        blob_properties = blob_client.get_blob_properties()
+        length = blob_properties.size
+        #print("\t Blob name: " + blob_name)
+        #print("\t Blob size: " + str(length))
+        return length
     except Exception as ex:
-        if isinstance(ex, ResourceExistsError):
+        if isinstance(ex, ResourceNotFoundError):
             length = -1
             return length
         else:
