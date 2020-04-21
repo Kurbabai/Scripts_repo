@@ -200,7 +200,7 @@ def get_md5_for_dfs_file(fname):
         print(ex)
 
 
-def get_md5_from_the_blob(account_name, container_name, blob_name)
+def get_md5_from_the_blob(account_name, container_name, blob_name):
     try:
         bla_bla_bla = bla
     except Exception as ex:
