@@ -184,7 +184,7 @@ def get_blob_size(account_name, container_name, blob_name):
         #print("\t Blob size: " + str(length))
         return length
     except Exception as ex:
-        if isinstance(ex, BlobNotFound):
+        if isinstance(ex, BlobNotFoundError):
             length = -1
             return length
         else:
