@@ -188,7 +188,7 @@ def get_blob_size(account_name, container_name, blob_name):
             length = -1
             return length
         else:
-            print('Exception in get_blob_size for file ' + dfs_path + ' :')
+            print('Exception in get_blob_size for file ' + blob_name + ' :')
             print(ex)
 
 
