@@ -184,13 +184,12 @@ def get_blob_size(account_name, container_name, blob_name):
         #print("\t Blob size: " + str(length))
         return length
     except Exception as ex:
-        if isinstance(ex, ResourceExistsError):
+        if isinstance(ex, BlobNotFound):
             length = -1
             return length
         else:
             print('Exception in get_blob_size for file ' + blob_name + ' :')
             print(ex)
-
 
 
 def get_md5_for_dfs_file(fname):
