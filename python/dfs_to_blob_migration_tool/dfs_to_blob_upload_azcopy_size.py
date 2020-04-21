@@ -130,7 +130,7 @@ def file_upload_to_blob(account_name, container_name, blob_name, dfs_path, dfs_f
         command = "C://Temp//azcopy.exe"
         params = "copy " + dfs_path + " " + "https://" + account_name + ".blob.core.windows.net/" + container_name + "/" + blob_name + " --log-level=NONE >> " + original_file + "_log_" + time.strftime("%Y_%m_%d") + ".txt"
         os.system(command+" "+params)
-        print("Blob file size for " + blob_name + " is : " str(get_blob_file_size(account_name, container_name, blob_name)))
+        print("Blob file size for " + blob_name + " is : " + str(get_blob_file_size(account_name, container_name, blob_name)))
         return True
         #else:
         #    pass
