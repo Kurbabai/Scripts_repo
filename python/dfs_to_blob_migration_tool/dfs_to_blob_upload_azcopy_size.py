@@ -130,6 +130,7 @@ def file_upload_to_blob(account_name, container_name, blob_name, dfs_path, dfs_f
         command = "C://Temp//azcopy.exe"
         params = "copy " + dfs_path + " " + "https://" + account_name + ".blob.core.windows.net/" + container_name + "/" + blob_name + " --log-level=NONE >> " + original_file + "_log_" + time.strftime("%Y_%m_%d") + ".txt"
         os.system(command+" "+params)
+        print("Blob file size for " + blob_name + " is : " str(get_blob_file_size(account_name, container_name, blob_name)))
         return True
         #else:
         #    pass
@@ -173,14 +174,14 @@ def get_dfs_file_size(fname):
         print(ex)
 
 
-def get_blob_file_size(account_name, container_name, blob_name, fname):
+def get_blob_file_size(account_name, container_name, blob_name):
     try:
         blob_properties = BlobProperties.from_connection_string(conn_str=azure_connection_string(account_name, connect_str_from_passwordstate), container_name=container_name, blob_name=blob_name)
         #block_blob_service = BlockBlobService(account_name= account_name, account_key=azure_connection_string(account_name, connect_str_from_passwordstate))
         #block_blob_service.create_container(container_name)
         generator = blob_properties.list_blobs(container_name)
         for blob in generator:
-            length = BlobProperties.get_blob_properties(block_blob_service,container_name,blob_name).properties.size
+            length = BlobProperties.get_blob_properties(blob_properties,container_name,blob_name).properties.size
             print("\t Blob name: " + blob_name)
             print(length)
         return length
