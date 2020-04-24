@@ -1,16 +1,14 @@
 # import libraries
 from azure.core.exceptions import ResourceExistsError, ResourceNotFoundError
-from azure.storage.blob import BlobServiceClient, BlobClient, ContainerClient, BlobProperties, PartialBatchErrorException
+from azure.storage.blob import BlobClient
 import json
 import os
 import sys
 import time
 import hashlib
 import base64
-import requests
 
 # Declare variables
-
 company_name = "igloo"
 environment_code = "p"
 country_code = input("Please enter country code: ")
@@ -22,6 +20,7 @@ missing_dest_file = original_file + "_missing_" + time.strftime(
 dest_file = environment_code.upper() + country_code.upper() + tenant_name.upper() + "_" + time.strftime(
     "%Y_%m_%d-%H%M%S") + "_delta" + ".txt"
 account_name_prefix = company_name + environment_code + country_code + tenant_name + "binariessa"
+
 
 def main():
     try:
@@ -114,7 +113,7 @@ def convert_dfs_path_to_url(dfs_path):
         return blob_name
 
     except Exception as ex:
-        print('Exception in convert_dfs_path_to_url:')
+        print('Exception in convert_dfs_path_to_url for path ' + dfs_path + ' :')
         print(ex)
 
 
@@ -122,9 +121,8 @@ def file_upload_to_blob(account_name, container_name, blob_name, dfs_path):
     try:
         #blob_client = BlobClient.from_connection_string(conn_str=azure_connection_string(account_name, connect_str_from_passwordstate), container_name=container_name, blob_name=blob_name)
         #blob_client.upload_blob(dfs_path)
-        #if dfs_md5 == get_md5_from_the_blob(blob_name):
+        #if dfs_md5 != get_md5_from_the_blob(blob_name):
         dfs_file_size = get_dfs_file_size(dfs_path)
-
         blob_file_size = get_blob_size(account_name, container_name, blob_name)
         if blob_file_size != dfs_file_size:
             #print("DFS File size for " + dfs_path + " is : " + str(dfs_file_size))
@@ -162,7 +160,7 @@ def azure_connection_string(account_name, connect_str_from_passwordstate):
         return connect_str
 
     except Exception as ex:
-        print('Exception in function azure_connection_string:')
+        print('Exception in function azure_connection_string for account ' + account_name + ' :')
         print(ex)
 
 
@@ -171,7 +169,7 @@ def get_dfs_file_size(fname):
         dfs_file_stats = os.stat(fname)
         return dfs_file_stats.st_size
     except Exception as ex:
-        print('Exception in function dfs_file_size:')
+        print('Exception in function get_dfs_file_size for file ' + fname + ' :')
         print(ex)
 
 
@@ -180,13 +178,11 @@ def get_blob_size(account_name, container_name, blob_name):
         blob_client = BlobClient.from_connection_string(conn_str=azure_connection_string(account_name, connect_str_from_passwordstate), container_name=container_name, blob_name=blob_name)
         blob_properties = blob_client.get_blob_properties()
         length = blob_properties.size
-        #print("\t Blob name: " + blob_name)
-        #print("\t Blob size: " + str(length))
         return length
     except Exception as ex:
         if isinstance(ex, ResourceNotFoundError):
-            length = -1
-            return length
+            negative_length = -1
+            return negative_length
         else:
             print('Exception in get_blob_size for file ' + blob_name + ' :')
             print(ex)
@@ -200,7 +196,7 @@ def get_md5_for_dfs_file(fname):
                 hash_md5.update(chunk)
         return base64.b64encode(hash_md5.digest()).decode('utf-8')
     except Exception as ex:
-        print('Exception in function md5:')
+        print('Exception in function get_md5_for_dfs_file for file ' + fname + ' :')
         print(ex)
 
 
