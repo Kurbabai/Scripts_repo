@@ -137,7 +137,7 @@ def file_upload_to_blob(account_name, container_name, blob_name, dfs_path):
         #if isinstance(ex, ResourceExistsError):
             #pass
         #else:
-        print('Exception in file_upload_to_blob for file ' + dfs_path + ' :')
+        print('Exception in file_upload_to_blob for path ' + dfs_path + ' :')
         print(ex)
 
 
@@ -264,7 +264,7 @@ def container_hex(two_letters):
             sa_number = "not_defined"
         return sa_number
     except Exception as ex:
-        print('Exception in function container_hex:')
+        print('Exception in function container_hex for letters ' + two_letters + ' :')
         print(ex)
 
 
