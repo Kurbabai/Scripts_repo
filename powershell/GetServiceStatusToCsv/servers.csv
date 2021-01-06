@@ -1,0 +1,5 @@
+#TYPE Selected.System.Management.ManagementObject
+"__SERVER","name","startmode","state","status"
+"MB1","Dhcp","Auto","Running","OK"
+"CAS1","Dhcp","Auto","Running","OK"
+"HUB1","Dhcp","Auto","Running","OK"
